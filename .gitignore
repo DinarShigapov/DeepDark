@@ -1,0 +1,12 @@
+.idea/
+*.iml
+*.sln.iml
+*.DotSettings.user
+*.sln.DotSettings.user
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+.vs/
+Build/
+cmake-build-*/
