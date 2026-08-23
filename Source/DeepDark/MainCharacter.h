@@ -35,16 +35,18 @@ protected:
 	TObjectPtr<UInputMappingContext> PlayerMappingContext;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
-	class UInputAction* MoveAction;
+	TObjectPtr<UInputAction> MoveAction;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
-	class UInputAction* LookAction;
+	TObjectPtr<UInputAction> LookAction;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> InteractAction;
 	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void Move(const struct FInputActionValue& Value);
-
 	void Look(const struct FInputActionValue& Value);
-
+	void Interact();
 
 };

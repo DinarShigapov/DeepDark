@@ -5,6 +5,6 @@
 
 ADDGameMode::ADDGameMode()
 {
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("/Game/Player/BP_MainCharacter"));
-	DefaultPawnClass = PlayerPawnClassFinder.Class;
+	UE_LOG(LogTemp, Warning, TEXT("!!! DDGameMode ACTIVE !!!"));
+
 }

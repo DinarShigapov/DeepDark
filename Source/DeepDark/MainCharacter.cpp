@@ -3,21 +3,22 @@
 
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "Interaction/DDInteractionComponent.h"
 #include "MainCharacter.h"
 
-#include "EnhancedInputSubsystems.h"
 
-
-// Sets default values
+// Создает камеру игрока.
+// Привязывает компонент UDDInteractionComponent к Character
 AMainCharacter::AMainCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 	
 	Camera = CreateDefaultSubobject<UCameraComponent>("Camera");
 	Camera->SetupAttachment(RootComponent);
 	Camera->bUsePawnControlRotation = true;
-
+	
+	InteractionComponent = CreateDefaultSubobject<UDDInteractionComponent>(TEXT("InteractionComponent"));
 }
 
 // Called when the game starts or when spawned
@@ -32,9 +33,7 @@ void AMainCharacter::BeginPlay()
 			Subsystem->AddMappingContext(PlayerMappingContext, 0);
 		}
 	}
-	
 }
-
 
 void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -44,8 +43,8 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	{
 		Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMainCharacter::Move);
 		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMainCharacter::Look);
+		Input->BindAction(InteractAction, ETriggerEvent::Started, this, &AMainCharacter::Interact);
 	}
-
 }
 
 void AMainCharacter::Move(const struct FInputActionValue& Value)
@@ -76,3 +75,10 @@ void AMainCharacter::Look(const struct FInputActionValue& Value)
 	}
 }
 
+void AMainCharacter::Interact()
+{
+	if (InteractionComponent)
+	{
+		InteractionComponent->TryInteract();
+	}
+}

@@ -7,19 +7,17 @@
 #include "DDInteractable.generated.h"
 
 // This class does not need to be modified.
-UINTERFACE(MinimalAPI)
+UINTERFACE(Blueprintable)
 class UDDInteractable : public UInterface
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 };
 
-/**
- * 
- */
-class DEEPDARK_API IDDInteractable
+class IDDInteractable
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+
+    virtual void Interact(AActor* Interactor) = 0;
 };
