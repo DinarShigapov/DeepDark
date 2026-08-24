@@ -7,7 +7,7 @@
 #include "DDInteractable.generated.h"
 
 // This class does not need to be modified.
-UINTERFACE(Blueprintable)
+UINTERFACE(MinimalAPI)
 class UDDInteractable : public UInterface
 {
     GENERATED_BODY()

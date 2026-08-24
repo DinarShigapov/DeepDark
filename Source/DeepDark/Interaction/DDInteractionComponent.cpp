@@ -12,19 +12,7 @@
 // Sets default values for this component's properties
 UDDInteractionComponent::UDDInteractionComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
-}
-
-
-// Called when the game starts
-void UDDInteractionComponent::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-void UDDInteractionComponent::InitializeComponent()
-{
-	Super::InitializeComponent();
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
 // Пытается взаимодействовать с объектом, на который смотрит Character
@@ -84,10 +72,4 @@ bool UDDInteractionComponent::TraceForInteractable(FHitResult& OutHit) const
 	DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 0.0f, 0, 2.0f);
 	
 	return GetWorld()->LineTraceSingleByChannel(OutHit, Start, End,ECC_Visibility, QueryParams);
-}
-
-void UDDInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
 }
