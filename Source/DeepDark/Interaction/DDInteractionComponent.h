@@ -18,6 +18,10 @@ public:
 private:
 	bool TraceForInteractable(FHitResult& OutHit) const;
 	
-	UPROPERTY(EditAnywhere, Category="Interaction")
-	float InteractionDistance = 200.0f;
+	UPROPERTY(EditAnywhere, Category="Interaction", meta=(ClampMin="0.0", ClampMax="500.0"))
+	float InteractionDistance = 200.f;
+
+	UPROPERTY(EditAnywhere, Category="Interaction", meta=(ClampMin="0.0", ClampMax="20.0"))
+	float InteractionRadius = 5.f;
+	
 };

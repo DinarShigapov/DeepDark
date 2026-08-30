@@ -34,15 +34,13 @@ void UDDInteractionComponent::TryInteract()
 		return;
 	}
 
-	if (HitActor->GetClass()->ImplementsInterface(UDDInteractable::StaticClass()))
-	{
-		IDDInteractable* Interactable =	Cast<IDDInteractable>(HitActor);
+	IDDInteractable* Interactable =	Cast<IDDInteractable>(HitActor);
 
-		if (Interactable)
-		{
-			Interactable->Interact(GetOwner());
-		}
+	if (!Interactable)
+	{
+		return;
 	}
+	Interactable->Execute_Interact(HitActor, GetOwner());
 }
 
 // Создает луч от камеры игрока и определяет объект, на который направлен взгляд игрока в пределах InteractionDistance.
@@ -67,9 +65,10 @@ bool UDDInteractionComponent::TraceForInteractable(FHitResult& OutHit) const
 
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(Owner);
+	const FCollisionShape CollisionShape = FCollisionShape::MakeSphere(InteractionRadius);
 
 	// Проверка лучом, куда смотрит игрок
 	DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 0.0f, 0, 2.0f);
 	
-	return GetWorld()->LineTraceSingleByChannel(OutHit, Start, End,ECC_Visibility, QueryParams);
+	return GetWorld()->SweepSingleByChannel(OutHit, Start, End, FQuat::Identity, ECC_Visibility, CollisionShape, QueryParams);
 }
