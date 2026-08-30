@@ -9,9 +9,28 @@
 /**
  * 
  */
+
+UENUM(BlueprintType)
+enum class EDDGameplayState : uint8
+{
+	Preparation,
+	Launch,
+	Descent,
+	Event,
+	DemoEnd
+};
+
 UCLASS()
 class DEEPDARK_API ADDGameState : public AGameState
 {
 	GENERATED_BODY()
+	
+public:
+	EDDGameplayState GetGameplayState() const;
+	void SetGameplayState(EDDGameplayState NewState);
+
+private:
+	UPROPERTY()
+	EDDGameplayState GameplayState = EDDGameplayState::Preparation;
 	
 };

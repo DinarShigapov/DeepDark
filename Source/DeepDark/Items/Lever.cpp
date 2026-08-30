@@ -30,5 +30,10 @@ void ALever::BeginPlay()
 
 void ALever::Interact_Implementation(AActor* Character)
 {
+	if (!Character)
+	{
+		return;
+	}
+	
 	UE_LOG(LogTemp, Warning, TEXT("!!! LEVER !!!"));
 }
