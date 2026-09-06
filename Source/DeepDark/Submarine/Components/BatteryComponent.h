@@ -4,25 +4,6 @@
 #include "Components/ActorComponent.h"
 #include "BatteryComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPowerStateChanged, FName, ConsumerName);
-
-USTRUCT(BlueprintType)
-struct FBatteryConsumer
-{
-	GENERATED_BODY()
-
-	// Название модуля
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName Name;
-
-	// Сколько мощности требует модуль 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float PowerRequired = 0.0f;
-
-	// Включен ли модуль
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bEnabled = false;
-};
 
 UCLASS()
 class DEEPDARK_API UBatteryComponent : public UActorComponent
@@ -32,47 +13,35 @@ class DEEPDARK_API UBatteryComponent : public UActorComponent
 public:	
 	UBatteryComponent();
 	
-	void SetMaxPower(float NewMaxPower);
+	// Возвращает максимальный заряд батареи
+	UFUNCTION(BlueprintPure)
+	float GetMaxEnergy() const
+	{
+		return MaxEnergy;
+	}
+	
+	// Возвращает заряда батареи
+	UFUNCTION(BlueprintPure)
+	float GetCurrentEnergy() const
+	{
+		return CurrentEnergy;
+	}
+	
+	// Возвращает процент заряда батареи 
+	UFUNCTION(BlueprintPure, Category="Battery")
+	float GetChargePercent() const
+	{
+		return (CurrentEnergy / MaxEnergy) * 100.0f;
+	}
 
-protected:
-	// Массив модулей, которые используют батарею
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Power")
-	TArray<FBatteryConsumer> Consumers;
-
-	// Текущая нагрузка
-	UFUNCTION(BlueprintPure, Category="Power")
-	float GetCurrentLoad() const;
+	// Расходует энергию
+	UFUNCTION(BlueprintCallable, Category="Battery")
+	bool ConsumeEnergy(float Amount);
 	
-	// Процент нагрузки
-	UFUNCTION(BlueprintPure, Category="Power")
-	float GetLoadPercent() const;
-	
-	// Можно ли включить модуль
-	UFUNCTION(BlueprintPure, Category="Power")
-	bool TryEnableConsumer(FName ConsumerName) const;
-	
-	// Включить модуль
-	UFUNCTION(BlueprintCallable, Category="Power")
-	bool EnableConsumer(FName ConsumerName);
-	
-	// Выключить модуль
-	UFUNCTION(BlueprintCallable, Category="Power")
-	bool DisableConsumer(FName ConsumerName);
-
-	// Проверить, включен ли модуль
-	UFUNCTION(BlueprintPure, Category="Power")
-	bool IsConsumerEnabled(FName ConsumerName) const;
-	
-	// Событие изменения питания
-	UPROPERTY(BlueprintAssignable, Category="Power")
-	FOnPowerStateChanged OnPowerStateChanged;
-
 private:
-	// Максимальная мощность электросети
-	UPROPERTY(EditAnywhere, meta=(ClampMin="1.0", ClampMax="100.0"))
-	float MaxPower = 100.0f;
-
-	FBatteryConsumer* FindConsumer(FName ConsumerName);
-
-	const FBatteryConsumer* FindConsumer(FName ConsumerName) const;
+	UPROPERTY(EditAnywhere, meta=(ClampMin="0.0", ClampMax="100.0"))
+	float MaxEnergy = 100.0f;
+	
+	UPROPERTY(VisibleAnywhere)
+	float CurrentEnergy = 100.0f;	
 };

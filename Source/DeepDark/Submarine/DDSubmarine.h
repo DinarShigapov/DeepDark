@@ -5,6 +5,7 @@
 #include "GameFramework/Actor.h"
 #include "DDSubmarine.generated.h"
 
+class UPowerComponent;
 class UBatteryComponent;
 
 UCLASS()
@@ -17,12 +18,16 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	
+	void Tick(float DeltaTime);
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Submarine", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> SubmarineMesh;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Submarine", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UBatteryComponent> BatteryComponent = nullptr;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Submarine", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UPowerComponent> PowerComponent = nullptr;
 	
 };
