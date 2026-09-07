@@ -1,10 +1,16 @@
-
 #include "BatteryComponent.h"
 
 
 UBatteryComponent::UBatteryComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
+}
+
+void UBatteryComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	CurrentEnergy = MaxEnergy;
 }
 
 bool UBatteryComponent::ConsumeEnergy(float Amount)

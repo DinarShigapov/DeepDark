@@ -1,14 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameState.h"
 #include "DDGameState.generated.h"
-
-/**
- * 
- */
 
 UENUM(BlueprintType)
 enum class EDDGameplayState : uint8
@@ -32,5 +26,4 @@ public:
 private:
 	UPROPERTY()
 	EDDGameplayState GameplayState = EDDGameplayState::Preparation;
-	
 };

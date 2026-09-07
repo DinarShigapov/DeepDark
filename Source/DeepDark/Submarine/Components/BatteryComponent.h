@@ -12,7 +12,7 @@ class DEEPDARK_API UBatteryComponent : public UActorComponent
 
 public:	
 	UBatteryComponent();
-	
+
 	// Возвращает максимальный заряд батареи
 	UFUNCTION(BlueprintPure)
 	float GetMaxEnergy() const
@@ -38,10 +38,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Battery")
 	bool ConsumeEnergy(float Amount);
 	
+protected:
+	virtual void BeginPlay() override;
+	
 private:
-	UPROPERTY(EditAnywhere, meta=(ClampMin="0.0", ClampMax="100.0"))
-	float MaxEnergy = 100.0f;
+	UPROPERTY(EditAnywhere, meta=(ClampMin="50.0", ClampMax="200.0"))
+	float MaxEnergy = 100.0f; // кВт.ч
 	
 	UPROPERTY(VisibleAnywhere)
-	float CurrentEnergy = 100.0f;	
+	float CurrentEnergy = 0.0f;	
 };

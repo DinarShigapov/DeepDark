@@ -1,14 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "DDGameFlowManager.generated.h"
-
-/**
- * 
- */
 
 UENUM(BlueprintType)
 enum class EDDGameFlowState : uint8
@@ -19,7 +13,6 @@ enum class EDDGameFlowState : uint8
 	Paused,
 	DemoEnd
 };
-
 
 UCLASS()
 class DEEPDARK_API UDDGameFlowManager : public UGameInstanceSubsystem
@@ -47,8 +40,6 @@ public:
 	EDDGameFlowState GetCurrentState() const;
 
 private:
-
 	UPROPERTY()
 	EDDGameFlowState CurrentState =	EDDGameFlowState::MainMenu;
-	
 };

@@ -16,7 +16,7 @@ struct FPowerConsumer
 	FName Name;
 
 	// Сколько мощности требует модуль 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ClampMin="0.0", ClampMax="100.0"))
 	float PowerRequired = 0.0f;
 
 	// Включен ли модуль
@@ -42,7 +42,7 @@ public:
 	
 	// Можно ли включить модуль
 	UFUNCTION(BlueprintPure, Category="Power")
-	bool TryEnableConsumer(FName ConsumerName) const;
+	bool CanEnableConsumer(FName ConsumerName) const;
 	
 	// Включить модуль
 	UFUNCTION(BlueprintCallable, Category="Power")
@@ -68,7 +68,7 @@ protected:
 private:
 	// Максимальная мощность электросети
 	UPROPERTY(VisibleAnywhere)
-	float MaxPower = 100.0f;
+	float MaxPower = 20.0f;
 
 	FPowerConsumer* FindConsumer(FName ConsumerName);
 

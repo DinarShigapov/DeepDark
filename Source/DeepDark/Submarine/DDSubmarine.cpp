@@ -28,7 +28,6 @@ void ADDSubmarine::Tick(float DeltaTime)
 	// E - потреблённая энергия (кВт⋅ч)
 	// P - текущая мощность (кВт)
 	// t - время работы
-	
 	const float EnergyConsumed = (CurrentLoad * DeltaTime) / 3600.0f;
 
 	BatteryComponent->ConsumeEnergy(EnergyConsumed);

@@ -1,15 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
+#include "DDInteractionComponent.h"
 #include "DDInteractable.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/Character.h"
 #include "Camera/CameraComponent.h"
 #include "Engine/World.h"
-#include "DDInteractionComponent.h"
 
-
-// Sets default values for this component's properties
 UDDInteractionComponent::UDDInteractionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
@@ -40,7 +35,8 @@ void UDDInteractionComponent::TryInteract()
 	{
 		return;
 	}
-	Interactable->Execute_Interact(HitActor, GetOwner());
+	
+	Interactable->Interact(HitActor);
 }
 
 // Создает луч от камеры игрока и определяет объект, на который направлен взгляд игрока в пределах InteractionDistance.

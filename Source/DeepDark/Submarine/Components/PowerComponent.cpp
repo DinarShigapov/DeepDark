@@ -31,7 +31,7 @@ float UPowerComponent::GetLoadPercent() const
 	return (GetCurrentLoad() / MaxPower) * 100.0f;
 }
 
-bool UPowerComponent::TryEnableConsumer(FName ConsumerName) const
+bool UPowerComponent::CanEnableConsumer(FName ConsumerName) const
 {
 	const FPowerConsumer* Consumer = FindConsumer(ConsumerName);
 
@@ -64,7 +64,7 @@ bool UPowerComponent::EnableConsumer(FName ConsumerName)
 		return true;
 	}
 
-	if (!TryEnableConsumer(ConsumerName))
+	if (!CanEnableConsumer(ConsumerName))
 	{
 		UE_LOG(LogTemp,	Warning,TEXT("Cannot enable %s: power overload!"),	*ConsumerName.ToString());
 
