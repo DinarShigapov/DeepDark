@@ -13,8 +13,7 @@ void UBatteryComponent::BeginPlay()
 	CurrentEnergy = MaxEnergy;
 }
 
-bool UBatteryComponent::ConsumeEnergy(float Amount)
+void UBatteryComponent::ConsumeEnergy(float Amount)
 {
 	CurrentEnergy = FMath::Clamp(CurrentEnergy - Amount, 0.f, MaxEnergy);
-	return true;
 }

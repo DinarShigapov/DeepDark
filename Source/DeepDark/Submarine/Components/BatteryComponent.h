@@ -36,7 +36,7 @@ public:
 
 	// Расходует энергию
 	UFUNCTION(BlueprintCallable, Category="Battery")
-	bool ConsumeEnergy(float Amount);
+	void ConsumeEnergy(float Amount);
 	
 protected:
 	virtual void BeginPlay() override;

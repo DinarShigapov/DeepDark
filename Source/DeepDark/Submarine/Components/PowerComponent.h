@@ -20,7 +20,7 @@ struct FPowerConsumer
 	float PowerRequired = 0.0f;
 
 	// Включен ли модуль
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	bool bEnabled = false;
 };
 
