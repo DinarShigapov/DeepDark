@@ -10,10 +10,15 @@ void UBatteryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CurrentEnergy = MaxEnergy;
+	CurrentEnergy = Capacity;
 }
 
 void UBatteryComponent::ConsumeEnergy(float Amount)
 {
-	CurrentEnergy = FMath::Clamp(CurrentEnergy - Amount, 0.f, MaxEnergy);
+	if (Amount <= 0)
+	{
+		return;
+	}
+	
+	CurrentEnergy = FMath::Clamp(CurrentEnergy - Amount, 0.f, Capacity);
 }

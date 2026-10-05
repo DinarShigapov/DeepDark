@@ -2,27 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "DeepDark/Submarine/Interfaces/IPowerConsumer.h"
 #include "PowerComponent.generated.h"
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPowerStateChanged, FName, ConsumerName);
-
-USTRUCT(BlueprintType)
-struct FPowerConsumer
-{
-	GENERATED_BODY()
-
-	// Название модуля
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName Name;
-
-	// Сколько мощности требует модуль 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ClampMin="0.0", ClampMax="100.0"))
-	float PowerRequired = 0.0f;
-
-	// Включен ли модуль
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	bool bEnabled = false;
-};
 
 UCLASS()
 class DEEPDARK_API UPowerComponent : public UActorComponent
@@ -31,46 +12,30 @@ class DEEPDARK_API UPowerComponent : public UActorComponent
 
 public:	
 	UPowerComponent();
-
-	// Текущая нагрузка
-	UFUNCTION(BlueprintPure, Category="Power")
-	float GetCurrentLoad() const;
+	virtual void BeginPlay() override;
 	
-	// Процент нагрузки
-	UFUNCTION(BlueprintPure, Category="Power")
-	float GetLoadPercent() const;
-	
-	// Можно ли включить модуль
-	UFUNCTION(BlueprintPure, Category="Power")
-	bool CanEnableConsumer(FName ConsumerName) const;
-	
-	// Включить модуль
-	UFUNCTION(BlueprintCallable, Category="Power")
-	bool EnableConsumer(FName ConsumerName);
-	
-	// Выключить модуль
-	UFUNCTION(BlueprintCallable, Category="Power")
-	bool DisableConsumer(FName ConsumerName);
+	void RegisterConsumer(UActorComponent* Consumer);
+	void UnRegisterConsumer(UActorComponent* Consumer);
+	void NotifyPowerChanged();
 	
 protected:
-	// Массив модулей, которые используют батарею
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Power")
-	TArray<FPowerConsumer> Consumers;
-
-	// Проверить, включен ли модуль
-	UFUNCTION(BlueprintPure, Category="Power")
-	bool IsConsumerEnabled(FName ConsumerName) const;
+	TArray<TObjectPtr<UBatteryComponent>> Batteries;
+	TArray<TObjectPtr<UActorComponent>> Consumers;
 	
-	// Событие изменения питания
-	UPROPERTY(BlueprintAssignable, Category="Power")
-	FOnPowerStateChanged OnPowerStateChanged;
+	UPROPERTY(EditAnywhere, meta=(ClampMin="0.01", ClampMax="5.0"))
+	float PowerUpdateInterval = 0.1f;
 
 private:
-	// Максимальная мощность электросети
-	UPROPERTY(VisibleAnywhere)
-	float MaxPower = 20.0f;
-
-	FPowerConsumer* FindConsumer(FName ConsumerName);
-
-	const FPowerConsumer* FindConsumer(FName ConsumerName) const;
+	float GetTotalCurrentEnergy() const;
+	bool CanProvideEnergy(float Amount) const;
+	bool RequestEnergy(float Amount);
+	float GetOverloadMultiplier() const;
+	void RecalculateLoad();
+	void UpdatePower();
+	
+	const float MaxPower = 100.0f;
+	float CurrentLoad = 0.0f; 
+	
+	FTimerHandle PowerTimerHandle;
+	
 };

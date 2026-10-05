@@ -1,141 +1,124 @@
 #include "PowerComponent.h"
+#include "BatteryComponent.h"
 
 UPowerComponent::UPowerComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-
-float UPowerComponent::GetCurrentLoad() const
+void UPowerComponent::BeginPlay()
 {
-	float CurrentLoad = 0.0f;
-
-	for (const FPowerConsumer& Consumer : Consumers)
+	Super::BeginPlay();
+	
+	if (UWorld* World = GetWorld())
 	{
-		if (Consumer.bEnabled)
+		World->GetTimerManager().SetTimer(PowerTimerHandle, this, &UPowerComponent::UpdatePower, PowerUpdateInterval, true);
+	}
+}
+
+void UPowerComponent::RegisterConsumer(UActorComponent* Consumer)
+{
+	if (!Consumer)
+	{
+		return;
+	}
+	
+	if (Consumers.Contains(Consumer))
+	{
+		return;
+	}
+	
+	Consumers.Add(Consumer);
+	
+	RecalculateLoad();
+}
+
+void UPowerComponent::UnRegisterConsumer(UActorComponent* Consumer)
+{
+	if (!Consumer)
+	{
+		return;
+	}
+	
+	Consumers.Remove(Consumer);
+	
+	RecalculateLoad();
+}
+
+void UPowerComponent::NotifyPowerChanged()
+{
+	RecalculateLoad();
+}
+
+void UPowerComponent::RecalculateLoad()
+{
+	CurrentLoad = 0.f;
+	
+	for (UActorComponent* Consumer : Consumers)
+	{
+		if (!Consumer)
 		{
-			CurrentLoad += Consumer.PowerRequired;
+			continue;
+		}
+		IIPowerConsumer* PowerConsumer = Cast<IIPowerConsumer>(Consumer);
+		
+		if (!PowerConsumer)
+		{
+			continue;
+		}
+		CurrentLoad += PowerConsumer->GetCurrentPowerConsumption();
+	}
+}
+
+void UPowerComponent::UpdatePower()
+{
+	const float OverloadMultiplier = GetOverloadMultiplier();
+	const float EnergyToConsume = CurrentLoad * PowerUpdateInterval * OverloadMultiplier;
+	
+	RequestEnergy(EnergyToConsume);
+}
+
+float UPowerComponent::GetTotalCurrentEnergy() const
+{
+	float Total = 0.f;
+	for (UBatteryComponent* Battery : Batteries)
+	{
+		if (Battery)
+		{
+			Total += Battery->GetCurrentEnergy();
 		}
 	}
-
-	return CurrentLoad;
+	return Total;
 }
 
-float UPowerComponent::GetLoadPercent() const
+bool UPowerComponent::CanProvideEnergy(float Amount) const
 {
-	if (MaxPower <= 0.0f)
-	{
-		return 0.0f;
-	}
-
-	return (GetCurrentLoad() / MaxPower) * 100.0f;
+	return GetTotalCurrentEnergy() >= Amount;
 }
 
-bool UPowerComponent::CanEnableConsumer(FName ConsumerName) const
+bool UPowerComponent::RequestEnergy(float Amount)
 {
-	const FPowerConsumer* Consumer = FindConsumer(ConsumerName);
-
-	if (!Consumer)
-	{
+	if (Amount <= 0.f || !CanProvideEnergy(Amount))
 		return false;
+
+	const float PerBattery = Amount / FMath::Max(1, Batteries.Num());
+
+	for (UBatteryComponent* Battery : Batteries)
+	{
+		if (Battery) Battery->ConsumeEnergy(PerBattery);
 	}
 	
-	if (Consumer->bEnabled)
-	{
-		return true;
-	}
-
-	const float NewLoad = GetCurrentLoad() + Consumer->PowerRequired;
-
-	return NewLoad <= MaxPower;
-}
-
-bool UPowerComponent::EnableConsumer(FName ConsumerName)
-{
-	FPowerConsumer* Consumer = FindConsumer(ConsumerName);
-
-	if (!Consumer)
-	{
-		return false;
-	}
-	
-	if (Consumer->bEnabled)
-	{
-		return true;
-	}
-
-	if (!CanEnableConsumer(ConsumerName))
-	{
-		UE_LOG(LogTemp,	Warning,TEXT("Cannot enable %s: power overload!"),	*ConsumerName.ToString());
-
-		return false;
-	}
-
-	Consumer->bEnabled = true;
-
-	OnPowerStateChanged.Broadcast(ConsumerName);
-
 	return true;
 }
 
-bool UPowerComponent::DisableConsumer(FName ConsumerName)
+float UPowerComponent::GetOverloadMultiplier() const
 {
-	FPowerConsumer* Consumer = FindConsumer(ConsumerName);
-
-	if (!Consumer)
+	if (CurrentLoad <= MaxPower)
 	{
-		return false;
-	}
-
-	if (!Consumer->bEnabled)
-	{
-		return true;
+		return 1.0f;
 	}
 	
-	Consumer->bEnabled = false;
+	const float OverloadRatio = CurrentLoad / MaxPower;
 	
-	OnPowerStateChanged.Broadcast(ConsumerName);
-
-	return true;
-}
-
-bool UPowerComponent::IsConsumerEnabled(FName ConsumerName) const
-{
-	const FPowerConsumer* Consumer = FindConsumer(ConsumerName);
-
-	if (!Consumer)
-	{
-		return false;
-	}
-
-	return Consumer->bEnabled;
-}
-
-// Возвращает указатель на найденный Consumer.
-// Через возвращаемый указатель Consumer можно изменять.
-FPowerConsumer* UPowerComponent::FindConsumer(FName ConsumerName)
-{
-	for (FPowerConsumer& Consumer : Consumers)
-	{
-		if (Consumer.Name == ConsumerName)
-		{
-			return &Consumer;
-		}
-	}
-
-	return nullptr;
-}
-
-// Возвращает указатель на найденный Consumer только для чтения.
-const FPowerConsumer* UPowerComponent::FindConsumer(FName ConsumerName) const
-{
-	for (const FPowerConsumer& Consumer : Consumers)
-	{
-		if (Consumer.Name == ConsumerName)
-		{
-			return &Consumer;
-		}
-	}
-
-	return nullptr;
+	return OverloadRatio;
 }
