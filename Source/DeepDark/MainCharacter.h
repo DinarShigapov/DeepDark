@@ -6,7 +6,7 @@
 #include "MainCharacter.generated.h"
 
 class UCameraComponent;
-class UDDInteractionComponent;
+class UInteractionComponent;
 class UInputMappingContext;
 class UInputAction;
 
@@ -25,7 +25,7 @@ protected:
 	TObjectPtr<UCameraComponent> Camera;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player")
-	TObjectPtr<UDDInteractionComponent> InteractionComponent;
+	TObjectPtr<UInteractionComponent> InteractionComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputMappingContext> PlayerMappingContext;

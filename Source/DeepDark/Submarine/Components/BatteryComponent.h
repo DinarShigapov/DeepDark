@@ -28,11 +28,7 @@ public:
 		return (CurrentEnergy / Capacity) * 100.0f;
 	}
 	
-	bool IsEmpty() const
-	{
-		return CurrentEnergy <= Capacity;
-	}
-	
+	bool IsEmpty() const;
 	void ConsumeEnergy(float Amount);
 	
 protected:

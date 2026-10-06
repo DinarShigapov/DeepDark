@@ -2,7 +2,7 @@
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "Interaction/DDInteractionComponent.h"
+#include "Interaction/InteractionComponent.h"
 
 
 // Создает камеру игрока.
@@ -15,7 +15,7 @@ AMainCharacter::AMainCharacter()
 	Camera->SetupAttachment(RootComponent);
 	Camera->bUsePawnControlRotation = true;
 	
-	InteractionComponent = CreateDefaultSubobject<UDDInteractionComponent>(TEXT("InteractionComponent"));
+	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(TEXT("InteractionComponent"));
 }
 
 void AMainCharacter::BeginPlay()

@@ -2,8 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "DeepDark/Submarine/Interfaces/IPowerConsumer.h"
+#include "DeepDark/Submarine/Interfaces/PowerConsumer.h"
 #include "PowerComponent.generated.h"
+
+class UBatteryComponent;
 
 UCLASS()
 class DEEPDARK_API UPowerComponent : public UActorComponent
@@ -19,7 +21,10 @@ public:
 	void NotifyPowerChanged();
 	
 protected:
+	UPROPERTY()
 	TArray<TObjectPtr<UBatteryComponent>> Batteries;
+	
+	UPROPERTY()
 	TArray<TObjectPtr<UActorComponent>> Consumers;
 	
 	UPROPERTY(EditAnywhere, meta=(ClampMin="0.01", ClampMax="5.0"))
@@ -27,9 +32,9 @@ protected:
 
 private:
 	float GetTotalCurrentEnergy() const;
+	float GetOverloadMultiplier() const;
 	bool CanProvideEnergy(float Amount) const;
 	bool RequestEnergy(float Amount);
-	float GetOverloadMultiplier() const;
 	void RecalculateLoad();
 	void UpdatePower();
 	

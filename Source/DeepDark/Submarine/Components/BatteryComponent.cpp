@@ -13,6 +13,15 @@ void UBatteryComponent::BeginPlay()
 	CurrentEnergy = Capacity;
 }
 
+bool UBatteryComponent::IsEmpty() const
+{
+	if (CurrentEnergy <= 0)
+	{
+		return true;
+	}
+	return false;
+}
+
 void UBatteryComponent::ConsumeEnergy(float Amount)
 {
 	if (Amount <= 0)

@@ -60,7 +60,7 @@ void UPowerComponent::RecalculateLoad()
 		{
 			continue;
 		}
-		IIPowerConsumer* PowerConsumer = Cast<IIPowerConsumer>(Consumer);
+		IPowerConsumer* PowerConsumer = Cast<IPowerConsumer>(Consumer);
 		
 		if (!PowerConsumer)
 		{
@@ -99,7 +99,9 @@ bool UPowerComponent::CanProvideEnergy(float Amount) const
 bool UPowerComponent::RequestEnergy(float Amount)
 {
 	if (Amount <= 0.f || !CanProvideEnergy(Amount))
+	{
 		return false;
+	}
 
 	const float PerBattery = Amount / FMath::Max(1, Batteries.Num());
 

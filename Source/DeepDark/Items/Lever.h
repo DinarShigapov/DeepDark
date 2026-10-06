@@ -1,12 +1,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DeepDark/Interaction/DDInteractable.h"
+#include "DeepDark/Interaction/Interactable.h"
 #include "GameFramework/Actor.h"
 #include "Lever.generated.h"
 
 UCLASS()
-class DEEPDARK_API ALever : public AActor, public IDDInteractable
+class DEEPDARK_API ALever : public AActor, public IInteractable
 {
 	GENERATED_BODY()
 	
