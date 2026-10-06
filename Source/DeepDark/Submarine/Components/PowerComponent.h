@@ -16,8 +16,12 @@ public:
 	UPowerComponent();
 	virtual void BeginPlay() override;
 	
+	void AddBattery(UBatteryComponent* Battery);
+	void RemoveBattery(UBatteryComponent* Battery);
+	
 	void RegisterConsumer(UActorComponent* Consumer);
 	void UnRegisterConsumer(UActorComponent* Consumer);
+	
 	void NotifyPowerChanged();
 	
 protected:
@@ -31,7 +35,6 @@ protected:
 	float PowerUpdateInterval = 0.1f;
 
 private:
-	float GetTotalCurrentEnergy() const;
 	float GetOverloadMultiplier() const;
 	bool CanProvideEnergy(float Amount) const;
 	bool RequestEnergy(float Amount);

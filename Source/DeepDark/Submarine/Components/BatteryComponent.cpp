@@ -1,5 +1,7 @@
 #include "BatteryComponent.h"
 
+#include <Programs/UnrealBuildAccelerator/Core/Public/UbaBase.h>
+
 
 UBatteryComponent::UBatteryComponent()
 {
@@ -15,19 +17,21 @@ void UBatteryComponent::BeginPlay()
 
 bool UBatteryComponent::IsEmpty() const
 {
-	if (CurrentEnergy <= 0)
+	if (CurrentEnergy <= KINDA_SMALL_NUMBER)
 	{
 		return true;
 	}
 	return false;
 }
 
-void UBatteryComponent::ConsumeEnergy(float Amount)
+bool UBatteryComponent::ConsumeEnergy(float Amount)
 {
-	if (Amount <= 0)
+	if (Amount <= 0.0f)
 	{
-		return;
+		return false;
 	}
 	
-	CurrentEnergy = FMath::Clamp(CurrentEnergy - Amount, 0.f, Capacity);
+	CurrentEnergy = FMath::Min(Amount, CurrentEnergy);
+	
+	return true;
 }

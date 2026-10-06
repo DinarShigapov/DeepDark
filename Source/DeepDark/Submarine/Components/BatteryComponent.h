@@ -18,18 +18,18 @@ public:
 		return Capacity;
 	}
 	
-	float GetCurrentEnergy() const
-	{
-		return CurrentEnergy;
-	}
-	
 	float GetChargePercent() const
 	{
 		return (CurrentEnergy / Capacity) * 100.0f;
 	}
 	
+	float GetAvailableEnergy() const
+	{
+		return CurrentEnergy;
+	}
+	
 	bool IsEmpty() const;
-	void ConsumeEnergy(float Amount);
+	bool ConsumeEnergy(float Amount);
 	
 protected:
 	virtual void BeginPlay() override;

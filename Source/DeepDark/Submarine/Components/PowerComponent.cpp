@@ -16,6 +16,31 @@ void UPowerComponent::BeginPlay()
 	}
 }
 
+void UPowerComponent::AddBattery(UBatteryComponent* Battery)
+{
+	if (!Battery)
+	{
+		return;
+	}
+	
+	if (Batteries.Contains(Battery))
+	{
+		return;
+	}
+	
+	Batteries.Add(Battery);
+}
+
+void UPowerComponent::RemoveBattery(UBatteryComponent* Battery)
+{
+	if (!Battery)
+	{
+		return;
+	}
+	
+	Batteries.Remove(Battery);
+}
+
 void UPowerComponent::RegisterConsumer(UActorComponent* Consumer)
 {
 	if (!Consumer)
@@ -78,39 +103,72 @@ void UPowerComponent::UpdatePower()
 	RequestEnergy(EnergyToConsume);
 }
 
-float UPowerComponent::GetTotalCurrentEnergy() const
-{
-	float Total = 0.f;
-	for (UBatteryComponent* Battery : Batteries)
-	{
-		if (Battery)
-		{
-			Total += Battery->GetCurrentEnergy();
-		}
-	}
-	return Total;
-}
-
 bool UPowerComponent::CanProvideEnergy(float Amount) const
 {
-	return GetTotalCurrentEnergy() >= Amount;
+	if (Amount <= 0.0f)
+	{
+		return false;
+	}
+	
+	float AvailableEnergy = 0.0f;
+	
+	for (UBatteryComponent* Battery : Batteries)
+	{
+		if (!Battery)
+		{
+			continue;
+		}
+		
+		AvailableEnergy += Battery->GetAvailableEnergy();
+		
+		if (AvailableEnergy >= Amount)
+		{
+			return true;
+		}
+	}
+	
+	return false;
 }
 
 bool UPowerComponent::RequestEnergy(float Amount)
 {
-	if (Amount <= 0.f || !CanProvideEnergy(Amount))
+	if (Amount <= 0.f)
+	{
+		return false;
+	}
+	
+	if (!CanProvideEnergy(Amount))
 	{
 		return false;
 	}
 
-	const float PerBattery = Amount / FMath::Max(1, Batteries.Num());
+	float Remaining = Amount;
 
 	for (UBatteryComponent* Battery : Batteries)
 	{
-		if (Battery) Battery->ConsumeEnergy(PerBattery);
+		if (!Battery)
+		{
+			continue;
+		}
+		
+		const float AvailableEnergy = Battery->GetAvailableEnergy();
+		
+		if (AvailableEnergy <= 0.0f)
+		{
+			continue;
+		}
+		
+		const float EnergyToConsume = FMath::Min(Remaining, AvailableEnergy);
+		
+		Battery->ConsumeEnergy(EnergyToConsume);
+		
+		if (Remaining <= EnergyToConsume)
+		{
+			return true;
+		}
 	}
 	
-	return true;
+	return false;
 }
 
 float UPowerComponent::GetOverloadMultiplier() const
