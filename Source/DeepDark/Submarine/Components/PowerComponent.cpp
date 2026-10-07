@@ -1,5 +1,6 @@
 #include "PowerComponent.h"
 #include "BatteryComponent.h"
+#include "DeepDark/Submarine/Interfaces/PowerConsumer.h"
 
 UPowerComponent::UPowerComponent()
 {
@@ -16,58 +17,76 @@ void UPowerComponent::BeginPlay()
 	}
 }
 
-void UPowerComponent::AddBattery(UBatteryComponent* Battery)
+bool UPowerComponent::AddBattery(UBatteryComponent* Battery)
 {
 	if (!Battery)
 	{
-		return;
+		return false;
 	}
 	
 	if (Batteries.Contains(Battery))
 	{
-		return;
+		return false;
 	}
 	
 	Batteries.Add(Battery);
+	
+	return true;
 }
 
-void UPowerComponent::RemoveBattery(UBatteryComponent* Battery)
+bool UPowerComponent::RemoveBattery(UBatteryComponent* Battery)
 {
 	if (!Battery)
 	{
-		return;
+		return false;
 	}
 	
-	Batteries.Remove(Battery);
+	const int32 Removed = Batteries.Remove(Battery);
+	
+	return Removed > 0;
 }
 
-void UPowerComponent::RegisterConsumer(UActorComponent* Consumer)
+bool UPowerComponent::RegisterConsumer(UActorComponent* Consumer)
 {
 	if (!Consumer)
 	{
-		return;
+		return false;
+	}
+
+	if (!Consumer->GetClass()->ImplementsInterface(UPowerConsumer::StaticClass()))
+	{
+		return false;
 	}
 	
 	if (Consumers.Contains(Consumer))
 	{
-		return;
+		return false;
 	}
 	
 	Consumers.Add(Consumer);
 	
 	RecalculateLoad();
+	
+	return true;
 }
 
-void UPowerComponent::UnRegisterConsumer(UActorComponent* Consumer)
+bool UPowerComponent::UnRegisterConsumer(UActorComponent* Consumer)
 {
 	if (!Consumer)
 	{
-		return;
+		return false;
 	}
 	
-	Consumers.Remove(Consumer);
+	const int32 Removed = Consumers.Remove(Consumer);
+	
+	if (Removed == 0)
+	{
+		return false;
+	}
 	
 	RecalculateLoad();
+	
+	return true;
 }
 
 void UPowerComponent::NotifyPowerChanged()
@@ -99,76 +118,81 @@ void UPowerComponent::UpdatePower()
 {
 	const float OverloadMultiplier = GetOverloadMultiplier();
 	const float EnergyToConsume = CurrentLoad * PowerUpdateInterval * OverloadMultiplier;
+	const float EnergyReceived = RequestEnergy(EnergyToConsume);
 	
-	RequestEnergy(EnergyToConsume);
+	
+	if (EnergyReceived < EnergyToConsume - KINDA_SMALL_NUMBER)
+	{
+
+	}
 }
 
-bool UPowerComponent::CanProvideEnergy(float Amount) const
+
+float UPowerComponent::RequestEnergy(float Amount)
 {
 	if (Amount <= 0.0f)
 	{
-		return false;
+		return 0.0f;
 	}
-	
-	float AvailableEnergy = 0.0f;
+
+	TArray<UBatteryComponent*> ActiveBatteries;
 	
 	for (UBatteryComponent* Battery : Batteries)
 	{
-		if (!Battery)
+		if (!IsValid(Battery))
 		{
 			continue;
 		}
 		
-		AvailableEnergy += Battery->GetAvailableEnergy();
-		
-		if (AvailableEnergy >= Amount)
+		if (Battery->IsEmpty())
 		{
-			return true;
+			continue;
 		}
+		
+		ActiveBatteries.Add(Battery);
 	}
 	
-	return false;
-}
-
-bool UPowerComponent::RequestEnergy(float Amount)
-{
-	if (Amount <= 0.f)
-	{
-		return false;
-	}
-	
-	if (!CanProvideEnergy(Amount))
-	{
-		return false;
-	}
-
 	float Remaining = Amount;
 
-	for (UBatteryComponent* Battery : Batteries)
+	while (Remaining > KINDA_SMALL_NUMBER && !ActiveBatteries.IsEmpty())
 	{
-		if (!Battery)
+		const float Share = Remaining / ActiveBatteries.Num();
+
+		float ConsumedThisRound = 0.0f;
+
+		for (UBatteryComponent* Battery : ActiveBatteries)
 		{
-			continue;
+			if (!IsValid(Battery))
+			{
+				continue;
+			}
+
+			if (Battery->IsEmpty())
+			{
+				continue;
+			}
+			
+			const float EnergyToConsume = FMath::Min(Share, Battery->GetAvailableEnergy());
+			const float Consumed = Battery->ConsumeEnergy(EnergyToConsume);
+
+			ConsumedThisRound += Consumed;
 		}
+
+		Remaining -= ConsumedThisRound;
 		
-		const float AvailableEnergy = Battery->GetAvailableEnergy();
+		ActiveBatteries.RemoveAll([](UBatteryComponent* Battery)
+			{
+					return !IsValid(Battery) ||	Battery->IsEmpty();
+			}
+		);
 		
-		if (AvailableEnergy <= 0.0f)
+		if (ConsumedThisRound <= KINDA_SMALL_NUMBER)
 		{
-			continue;
-		}
-		
-		const float EnergyToConsume = FMath::Min(Remaining, AvailableEnergy);
-		
-		Battery->ConsumeEnergy(EnergyToConsume);
-		
-		if (Remaining <= EnergyToConsume)
-		{
-			return true;
+			break;
 		}
 	}
 	
-	return false;
+	return Amount - Remaining;
 }
 
 float UPowerComponent::GetOverloadMultiplier() const

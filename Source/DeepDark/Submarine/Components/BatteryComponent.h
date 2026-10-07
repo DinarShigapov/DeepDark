@@ -29,7 +29,7 @@ public:
 	}
 	
 	bool IsEmpty() const;
-	bool ConsumeEnergy(float Amount);
+	float ConsumeEnergy(float Amount);
 	
 protected:
 	virtual void BeginPlay() override;

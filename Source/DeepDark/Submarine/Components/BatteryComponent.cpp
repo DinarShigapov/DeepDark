@@ -1,8 +1,5 @@
 #include "BatteryComponent.h"
 
-#include <Programs/UnrealBuildAccelerator/Core/Public/UbaBase.h>
-
-
 UBatteryComponent::UBatteryComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
@@ -24,14 +21,16 @@ bool UBatteryComponent::IsEmpty() const
 	return false;
 }
 
-bool UBatteryComponent::ConsumeEnergy(float Amount)
+float UBatteryComponent::ConsumeEnergy(float Amount)
 {
 	if (Amount <= 0.0f)
 	{
-		return false;
+		return 0.0f;
 	}
 	
-	CurrentEnergy = FMath::Min(Amount, CurrentEnergy);
+	const float EnergyToConsume = FMath::Min(Amount, CurrentEnergy);
 	
-	return true;
+	CurrentEnergy -= EnergyToConsume;
+	
+	return EnergyToConsume;
 }

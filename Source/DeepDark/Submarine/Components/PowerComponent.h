@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "DeepDark/Submarine/Interfaces/PowerConsumer.h"
 #include "PowerComponent.generated.h"
 
 class UBatteryComponent;
@@ -16,11 +15,11 @@ public:
 	UPowerComponent();
 	virtual void BeginPlay() override;
 	
-	void AddBattery(UBatteryComponent* Battery);
-	void RemoveBattery(UBatteryComponent* Battery);
+	bool AddBattery(UBatteryComponent* Battery);
+	bool RemoveBattery(UBatteryComponent* Battery);
 	
-	void RegisterConsumer(UActorComponent* Consumer);
-	void UnRegisterConsumer(UActorComponent* Consumer);
+	bool RegisterConsumer(UActorComponent* Consumer);
+	bool UnRegisterConsumer(UActorComponent* Consumer);
 	
 	void NotifyPowerChanged();
 	
@@ -36,14 +35,12 @@ protected:
 
 private:
 	float GetOverloadMultiplier() const;
-	bool CanProvideEnergy(float Amount) const;
-	bool RequestEnergy(float Amount);
-	void RecalculateLoad();
+	float RequestEnergy(float Amount);
 	void UpdatePower();
+	void RecalculateLoad();
 	
 	const float MaxPower = 100.0f;
 	float CurrentLoad = 0.0f; 
 	
 	FTimerHandle PowerTimerHandle;
-	
 };

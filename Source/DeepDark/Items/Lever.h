@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "DeepDark/Interaction/Interactable.h"
+#include "DeepDark/Submarine/Interfaces/PowerConsumer.h"
 #include "GameFramework/Actor.h"
 #include "Lever.generated.h"
 
