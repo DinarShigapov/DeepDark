@@ -1,18 +1,18 @@
-#include "BatteryComponent.h"
+#include "Battery.h"
 
-UBatteryComponent::UBatteryComponent()
+ABattery::ABattery()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = false;
 }
 
-void UBatteryComponent::BeginPlay()
+void ABattery::BeginPlay()
 {
 	Super::BeginPlay();
 
 	CurrentEnergy = Capacity;
 }
 
-bool UBatteryComponent::IsEmpty() const
+bool ABattery::IsEmpty() const
 {
 	if (CurrentEnergy <= KINDA_SMALL_NUMBER)
 	{
@@ -21,7 +21,7 @@ bool UBatteryComponent::IsEmpty() const
 	return false;
 }
 
-float UBatteryComponent::ConsumeEnergy(float Amount)
+float ABattery::ConsumeEnergy(float Amount)
 {
 	if (Amount <= 0.0f)
 	{

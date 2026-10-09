@@ -4,7 +4,7 @@
 #include "Components/ActorComponent.h"
 #include "PowerComponent.generated.h"
 
-class UBatteryComponent;
+class ABattery;
 
 UCLASS()
 class DEEPDARK_API UPowerComponent : public UActorComponent
@@ -15,8 +15,8 @@ public:
 	UPowerComponent();
 	virtual void BeginPlay() override;
 	
-	bool AddBattery(UBatteryComponent* Battery);
-	bool RemoveBattery(UBatteryComponent* Battery);
+	bool AddBattery(ABattery* Battery);
+	bool RemoveBattery(ABattery* Battery);
 	
 	bool RegisterConsumer(UActorComponent* Consumer);
 	bool UnRegisterConsumer(UActorComponent* Consumer);
@@ -25,7 +25,7 @@ public:
 	
 protected:
 	UPROPERTY()
-	TArray<TObjectPtr<UBatteryComponent>> Batteries;
+	TArray<TObjectPtr<ABattery>> Batteries;
 	
 	UPROPERTY()
 	TArray<TObjectPtr<UActorComponent>> Consumers;

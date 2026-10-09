@@ -5,7 +5,8 @@
 #include "Submarine.generated.h"
 
 class UPowerComponent;
-class UBatteryComponent;
+class ABattery;
+class UPropulsionComponent;
 
 UCLASS()
 class DEEPDARK_API ASubmarine : public AActor
@@ -24,8 +25,11 @@ private:
 	TObjectPtr<UStaticMeshComponent> SubmarineMesh;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Submarine", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UBatteryComponent> BatteryComponent = nullptr;
+	TObjectPtr<ABattery> Battery = nullptr;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Submarine", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UPowerComponent> PowerComponent = nullptr;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Submarine", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UPropulsionComponent> PropulsionComponent = nullptr;
 };

@@ -1,5 +1,33 @@
 #include "Lever.h"
 
+float ALever::GetCurrentPowerConsumption() const
+{
+	return 0;
+}
+
+float ALever::GetMaxPowerConsumption() const
+{
+	return 0;
+}
+
+void ALever::SetPowered(bool bPowered)
+{
+}
+
+void ALever::OnPowerStatusChanged(bool bPowered)
+{
+}
+
+bool ALever::IsPowered() const
+{
+	return true;
+}
+
+EPriority ALever::GetPowerPriority() const
+{
+	return EPriority::Low;
+}
+
 ALever::ALever()
 {
 	PrimaryActorTick.bCanEverTick = false;

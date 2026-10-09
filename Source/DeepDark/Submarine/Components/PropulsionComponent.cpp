@@ -2,16 +2,11 @@
 
 UPropulsionComponent::UPropulsionComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
 void UPropulsionComponent::BeginPlay()
 {
 	Super::BeginPlay();
-}
-
-void UPropulsionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 

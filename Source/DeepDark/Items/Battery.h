@@ -2,16 +2,16 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "BatteryComponent.generated.h"
+#include "Battery.generated.h"
 
 
 UCLASS()
-class DEEPDARK_API UBatteryComponent : public UActorComponent
+class DEEPDARK_API ABattery : public AActor
 {
 	GENERATED_BODY()
 
 public:	
-	UBatteryComponent();
+	ABattery();
 	
 	float GetMaxEnergy() const
 	{

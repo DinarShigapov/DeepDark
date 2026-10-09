@@ -24,6 +24,7 @@ class DEEPDARK_API IPowerConsumer
 	
 	public:
 	
+	
 	virtual float GetCurrentPowerConsumption() const = 0;
 	virtual float GetMaxPowerConsumption() const = 0;
 	virtual void SetPowered(bool bPowered) = 0;

@@ -1,5 +1,5 @@
 #include "PowerComponent.h"
-#include "BatteryComponent.h"
+#include "DeepDark/Items/Battery.h"
 #include "DeepDark/Submarine/Interfaces/PowerConsumer.h"
 
 UPowerComponent::UPowerComponent()
@@ -17,7 +17,7 @@ void UPowerComponent::BeginPlay()
 	}
 }
 
-bool UPowerComponent::AddBattery(UBatteryComponent* Battery)
+bool UPowerComponent::AddBattery(ABattery* Battery)
 {
 	if (!Battery)
 	{
@@ -34,7 +34,7 @@ bool UPowerComponent::AddBattery(UBatteryComponent* Battery)
 	return true;
 }
 
-bool UPowerComponent::RemoveBattery(UBatteryComponent* Battery)
+bool UPowerComponent::RemoveBattery(ABattery* Battery)
 {
 	if (!Battery)
 	{
@@ -123,7 +123,7 @@ void UPowerComponent::UpdatePower()
 	
 	if (EnergyReceived < EnergyToConsume - KINDA_SMALL_NUMBER)
 	{
-
+		// Всё гг, братишка, вырубай 
 	}
 }
 
@@ -135,9 +135,9 @@ float UPowerComponent::RequestEnergy(float Amount)
 		return 0.0f;
 	}
 
-	TArray<UBatteryComponent*> ActiveBatteries;
+	TArray<ABattery*> ActiveBatteries;
 	
-	for (UBatteryComponent* Battery : Batteries)
+	for (ABattery* Battery : Batteries)
 	{
 		if (!IsValid(Battery))
 		{
@@ -160,7 +160,7 @@ float UPowerComponent::RequestEnergy(float Amount)
 
 		float ConsumedThisRound = 0.0f;
 
-		for (UBatteryComponent* Battery : ActiveBatteries)
+		for (ABattery* Battery : ActiveBatteries)
 		{
 			if (!IsValid(Battery))
 			{
@@ -180,7 +180,7 @@ float UPowerComponent::RequestEnergy(float Amount)
 
 		Remaining -= ConsumedThisRound;
 		
-		ActiveBatteries.RemoveAll([](UBatteryComponent* Battery)
+		ActiveBatteries.RemoveAll([](ABattery* Battery)
 			{
 					return !IsValid(Battery) ||	Battery->IsEmpty();
 			}

@@ -1,7 +1,7 @@
 #include "Submarine.h"
-
-#include "Components/BatteryComponent.h"
 #include "Components/PowerComponent.h"
+#include "Components/PropulsionComponent.h"
+#include "DeepDark/Items/Battery.h"
 
 ASubmarine::ASubmarine()
 {
@@ -11,18 +11,24 @@ ASubmarine::ASubmarine()
 	RootComponent = SubmarineMesh;
 	SubmarineMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics	);
 	
-	BatteryComponent = CreateDefaultSubobject<UBatteryComponent>(TEXT("BatteryComponent"));
+	Battery = CreateDefaultSubobject<ABattery>(TEXT("Battery"));
 	PowerComponent = CreateDefaultSubobject<UPowerComponent>(TEXT("PowerComponent"));
+	PropulsionComponent = CreateDefaultSubobject<UPropulsionComponent>(TEXT("PropulsionComponent"));
 }
 
 void ASubmarine::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	PowerComponent->RegisterConsumer(PropulsionComponent);
+		
 }
+
 
 void ASubmarine::Tick(float DeltaTime)
 {
 
 }
+
 
 
