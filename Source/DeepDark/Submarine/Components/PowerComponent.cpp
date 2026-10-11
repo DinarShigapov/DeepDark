@@ -5,6 +5,7 @@
 UPowerComponent::UPowerComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
+	BatterySlots.SetNum(SlotCount);
 }
 
 void UPowerComponent::BeginPlay()
@@ -24,12 +25,12 @@ bool UPowerComponent::AddBattery(ABattery* Battery)
 		return false;
 	}
 	
-	if (Batteries.Contains(Battery))
+	if (BatterySlots.Contains(Battery))
 	{
 		return false;
 	}
 	
-	Batteries.Add(Battery);
+	BatterySlots.Add(Battery);
 	
 	return true;
 }
@@ -41,19 +42,14 @@ bool UPowerComponent::RemoveBattery(ABattery* Battery)
 		return false;
 	}
 	
-	const int32 Removed = Batteries.Remove(Battery);
+	const int32 Removed = BatterySlots.Remove(Battery);
 	
 	return Removed > 0;
 }
 
 bool UPowerComponent::RegisterConsumer(UActorComponent* Consumer)
 {
-	if (!Consumer)
-	{
-		return false;
-	}
-
-	if (!Consumer->GetClass()->ImplementsInterface(UPowerConsumer::StaticClass()))
+	if (!IsValid(Consumer))
 	{
 		return false;
 	}
@@ -63,10 +59,34 @@ bool UPowerComponent::RegisterConsumer(UActorComponent* Consumer)
 		return false;
 	}
 	
-	Consumers.Add(Consumer);
-	
+	IPowerConsumer* ConsumerInterface = Cast<IPowerConsumer>(Consumer);
+
+	if (!ConsumerInterface)
+	{
+		return false;
+	}
+
+	const int32 InsertIndex = Consumers.IndexOfByPredicate(
+		[ConsumerInterface](const TObjectPtr<UActorComponent>& Existing)
+		{
+			const IPowerConsumer* ExistingInterface = Cast<IPowerConsumer>(Existing.Get());
+
+			return ExistingInterface &&
+				ConsumerInterface->GetPowerPriority() <
+				ExistingInterface->GetPowerPriority();
+		});
+
+	if (InsertIndex == INDEX_NONE)
+	{
+		Consumers.Add(Consumer);
+	}
+	else
+	{
+		Consumers.Insert(Consumer, InsertIndex);
+	}
+
 	RecalculateLoad();
-	
+
 	return true;
 }
 
@@ -104,12 +124,19 @@ void UPowerComponent::RecalculateLoad()
 		{
 			continue;
 		}
+		
 		IPowerConsumer* PowerConsumer = Cast<IPowerConsumer>(Consumer);
 		
 		if (!PowerConsumer)
 		{
 			continue;
 		}
+
+		if (!PowerConsumer->IsPowered())
+		{
+			continue;
+		}
+		
 		CurrentLoad += PowerConsumer->GetCurrentPowerConsumption();
 	}
 }
@@ -120,11 +147,41 @@ void UPowerComponent::UpdatePower()
 	const float EnergyToConsume = CurrentLoad * PowerUpdateInterval * OverloadMultiplier;
 	const float EnergyReceived = RequestEnergy(EnergyToConsume);
 	
-	
 	if (EnergyReceived < EnergyToConsume - KINDA_SMALL_NUMBER)
 	{
-		// Всё гг, братишка, вырубай 
+		RecalculatePower();
 	}
+}
+
+void UPowerComponent::RecalculatePower()
+{
+	
+	for (int32 i = Consumers.Num() - 1; i >= 0; --i)
+	{
+		UActorComponent* Consumer = Consumers[i];
+		
+		if (!IsValid(Consumer))
+		{
+			continue;
+		}
+
+		IPowerConsumer* PowerConsumer = Cast<IPowerConsumer>(Consumer);
+
+		if (!PowerConsumer)
+		{
+			continue;
+		}
+		
+		if (!PowerConsumer->IsPowered())
+		{
+			continue;
+		}
+		
+		PowerConsumer->SetPowered(false);
+		break;
+	}
+
+	RecalculateLoad();
 }
 
 
@@ -137,7 +194,7 @@ float UPowerComponent::RequestEnergy(float Amount)
 
 	TArray<ABattery*> ActiveBatteries;
 	
-	for (ABattery* Battery : Batteries)
+	for (ABattery* Battery : BatterySlots)
 	{
 		if (!IsValid(Battery))
 		{

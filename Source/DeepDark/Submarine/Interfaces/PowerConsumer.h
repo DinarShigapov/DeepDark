@@ -22,13 +22,12 @@ class DEEPDARK_API IPowerConsumer
 {
 	GENERATED_BODY()
 	
-	public:
-	
+public:
 	
 	virtual float GetCurrentPowerConsumption() const = 0;
 	virtual float GetMaxPowerConsumption() const = 0;
 	virtual void SetPowered(bool bPowered) = 0;
-	virtual void OnPowerStatusChanged(bool bPowered) = 0;
 	virtual bool IsPowered() const = 0;
 	virtual EPriority GetPowerPriority() const = 0;
+	
 };

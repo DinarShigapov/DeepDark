@@ -11,7 +11,6 @@ ASubmarine::ASubmarine()
 	RootComponent = SubmarineMesh;
 	SubmarineMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics	);
 	
-	Battery = CreateDefaultSubobject<ABattery>(TEXT("Battery"));
 	PowerComponent = CreateDefaultSubobject<UPowerComponent>(TEXT("PowerComponent"));
 	PropulsionComponent = CreateDefaultSubobject<UPropulsionComponent>(TEXT("PropulsionComponent"));
 }
@@ -21,7 +20,6 @@ void ASubmarine::BeginPlay()
 	Super::BeginPlay();
 	
 	PowerComponent->RegisterConsumer(PropulsionComponent);
-		
 }
 
 

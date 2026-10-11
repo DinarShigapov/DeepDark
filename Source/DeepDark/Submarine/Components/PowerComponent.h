@@ -25,7 +25,7 @@ public:
 	
 protected:
 	UPROPERTY()
-	TArray<TObjectPtr<ABattery>> Batteries;
+	TArray<TObjectPtr<ABattery>> BatterySlots;
 	
 	UPROPERTY()
 	TArray<TObjectPtr<UActorComponent>> Consumers;
@@ -37,8 +37,10 @@ private:
 	float GetOverloadMultiplier() const;
 	float RequestEnergy(float Amount);
 	void UpdatePower();
+	void RecalculatePower();
 	void RecalculateLoad();
 	
+	static constexpr int32 SlotCount = 4;
 	const float MaxPower = 100.0f;
 	float CurrentLoad = 0.0f; 
 	
