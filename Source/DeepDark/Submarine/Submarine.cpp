@@ -23,11 +23,9 @@ ASubmarine::ASubmarine()
 		UBatterySlotComponent* Slot = CreateDefaultSubobject<UBatterySlotComponent>(SlotName);
 		Slot->SlotIndex = Index;
 		Slot->SetupAttachment(RootComponent);
-		Slot->InitBoxExtent(FVector(20.0f, 20.0f, 20.0f));
-		Slot->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		Slot->SetCollisionObjectType(ECC_WorldDynamic);
-		Slot->SetCollisionResponseToAllChannels(ECR_Ignore);
-		Slot->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+		Slot->SetBoxExtent(FVector(20.0f, 20.0f, 20.0f));
+
+
 		
 		BatterySlots.Add(Slot);
 	}
@@ -46,8 +44,20 @@ void ASubmarine::BeginPlay()
 	
 	for (UBatterySlotComponent* Slot : BatterySlots)
 	{
+		
+		Slot->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		Slot->SetCollisionObjectType(ECC_WorldDynamic);
+		Slot->SetCollisionResponseToAllChannels(ECR_Block);
+		
+		DrawDebugBox(
+			GetWorld(),Slot->GetComponentLocation(), Slot->GetScaledBoxExtent(),Slot->GetComponentQuat(), FColor::Green,false, 
+			99.0f,
+			 0,
+			 2.0f);
 		Slot->PowerComponent = PowerComponent;
 	}
+	
+	
 }
 
 

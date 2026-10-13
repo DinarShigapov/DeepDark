@@ -1,7 +1,6 @@
 #include "InteractionComponent.h"
 #include "Interactable.h"
 #include "GameFramework/Actor.h"
-#include "GameFramework/Character.h"
 #include "Components/PrimitiveComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Engine/World.h"

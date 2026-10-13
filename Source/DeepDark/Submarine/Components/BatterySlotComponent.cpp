@@ -3,6 +3,12 @@
 
 #include "BatterySlotComponent.h"
 
+void UBatterySlotComponent::BeginPlay()
+{
+ Super::BeginPlay();
+}
+
+
 UBatterySlotComponent::UBatterySlotComponent()
 {
 	bHiddenInGame = false;

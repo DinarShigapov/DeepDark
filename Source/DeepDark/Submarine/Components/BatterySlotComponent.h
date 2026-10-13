@@ -10,13 +10,13 @@ class UPowerComponent;
 UCLASS()
 class DEEPDARK_API UBatterySlotComponent : public UBoxComponent, public IInteractable
 {
-public:
-	 UBatterySlotComponent();
-
-private:
 	GENERATED_BODY()
-
+	
 public:
+	virtual void BeginPlay() override;
+	
+	UBatterySlotComponent();
+	
 	TObjectPtr<UPowerComponent> PowerComponent = nullptr;
 	
 	virtual void Interact(AActor* Interactor) override;
