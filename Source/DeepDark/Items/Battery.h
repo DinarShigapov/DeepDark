@@ -1,12 +1,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "DeepDark/Interaction/PickupItem.h"
 #include "Battery.generated.h"
 
 
 UCLASS()
-class DEEPDARK_API ABattery : public AActor
+class DEEPDARK_API ABattery : public APickupItem
 {
 	GENERATED_BODY()
 
@@ -18,17 +18,17 @@ public:
 		return Capacity;
 	}
 	
-	float GetChargePercent() const
-	{
-		return (CurrentEnergy / Capacity) * 100.0f;
-	}
-	
 	float GetAvailableEnergy() const
 	{
 		return CurrentEnergy;
 	}
 	
+	float GetChargePercent() const;
 	bool IsEmpty() const;
+	
+	// Вычитает из запаса батареи запрашиваемое количество энергии.
+	// Если запрашиваемое количество превышает текущий запас, потребляет только имеющееся.
+	// Возвращает фактически потреблённое количество энергии.
 	float ConsumeEnergy(float Amount);
 	
 protected:

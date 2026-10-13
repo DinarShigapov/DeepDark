@@ -7,6 +7,7 @@
 class UPowerComponent;
 class ABattery;
 class UPropulsionComponent;
+class UBatterySlotComponent;
 
 UCLASS()
 class DEEPDARK_API ASubmarine : public AActor
@@ -18,7 +19,6 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	void Tick(float DeltaTime);
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Submarine", meta = (AllowPrivateAccess = "true"))
@@ -26,6 +26,9 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Submarine", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<ABattery> Battery = nullptr;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Submarine", meta=(AllowPrivateAccess = "true"))
+	TArray<TObjectPtr<UBatterySlotComponent>> BatterySlots;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Submarine", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UPowerComponent> PowerComponent = nullptr;

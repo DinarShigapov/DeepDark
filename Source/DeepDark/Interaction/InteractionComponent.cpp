@@ -2,6 +2,7 @@
 #include "Interactable.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/Character.h"
+#include "Components/PrimitiveComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Engine/World.h"
 
@@ -19,24 +20,37 @@ void UInteractionComponent::TryInteract()
 
 	if (!TraceForInteractable(Hit))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Interaction: nothing hit"));
 		return;
 	}
 
+	UPrimitiveComponent* HitComponent = Hit.GetComponent();
 	AActor* HitActor = Hit.GetActor();
 
-	if (!HitActor)
+	UE_LOG(
+		LogTemp,
+		Warning,
+		TEXT("Interaction hit: Actor=%s Component=%s"),
+		*GetNameSafe(HitActor),
+		*GetNameSafe(HitComponent)
+	);
+
+	if (HitComponent)
 	{
-		return;
+		if (IInteractable* Interactable = Cast<IInteractable>(HitComponent))
+		{
+			Interactable->Interact(GetOwner());
+			return;
+		}
 	}
 
-	IInteractable* Interactable = Cast<IInteractable>(HitActor);
-
-	if (!Interactable)
+	if (HitActor)
 	{
-		return;
+		if (IInteractable* Interactable = Cast<IInteractable>(HitActor))
+		{
+			Interactable->Interact(GetOwner());
+		}
 	}
-	
-	Interactable->Interact(GetOwner());
 }
 
 // Создает луч от камеры игрока и определяет объект, на который направлен взгляд игрока в пределах InteractionDistance.

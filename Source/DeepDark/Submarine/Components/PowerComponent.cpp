@@ -18,33 +18,43 @@ void UPowerComponent::BeginPlay()
 	}
 }
 
-bool UPowerComponent::AddBattery(ABattery* Battery)
+bool UPowerComponent::AddBattery(ABattery* Battery, int32 SlotIndex)
 {
-	if (!Battery)
+	if (!IsValid(Battery))
+	{
+		return false;
+	}
+
+	if (!BatterySlots.IsValidIndex(SlotIndex))
 	{
 		return false;
 	}
 	
-	if (BatterySlots.Contains(Battery))
+	if (IsValid(BatterySlots[SlotIndex].Get()))
 	{
 		return false;
 	}
 	
-	BatterySlots.Add(Battery);
-	
+	BatterySlots[SlotIndex] = Battery;
 	return true;
 }
 
-bool UPowerComponent::RemoveBattery(ABattery* Battery)
+ABattery* UPowerComponent::RemoveBattery(int32 SlotIndex)
 {
-	if (!Battery)
+	if (!BatterySlots.IsValidIndex(SlotIndex))
 	{
-		return false;
+		return nullptr;
 	}
 	
-	const int32 Removed = BatterySlots.Remove(Battery);
+	ABattery* Battery = BatterySlots[SlotIndex].Get();
 	
-	return Removed > 0;
+	if (!IsValid(Battery))
+	{
+		return nullptr;
+	}
+	
+	BatterySlots[SlotIndex] = nullptr;
+	return Battery;
 }
 
 bool UPowerComponent::RegisterConsumer(UActorComponent* Consumer)
@@ -107,11 +117,6 @@ bool UPowerComponent::UnRegisterConsumer(UActorComponent* Consumer)
 	RecalculateLoad();
 	
 	return true;
-}
-
-void UPowerComponent::NotifyPowerChanged()
-{
-	RecalculateLoad();
 }
 
 void UPowerComponent::RecalculateLoad()
@@ -252,6 +257,7 @@ float UPowerComponent::RequestEnergy(float Amount)
 	return Amount - Remaining;
 }
 
+// Возвращает множитель перегрузки системы питания.
 float UPowerComponent::GetOverloadMultiplier() const
 {
 	if (CurrentLoad <= MaxPower)

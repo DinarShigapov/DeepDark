@@ -12,6 +12,16 @@ void ABattery::BeginPlay()
 	CurrentEnergy = Capacity;
 }
 
+float ABattery::GetChargePercent() const
+{
+	if (Capacity <= KINDA_SMALL_NUMBER)
+	{
+		return 0.0f;
+	}
+	
+	return FMath::Clamp((CurrentEnergy / Capacity) * 100.0f, 0.0f, 100.0f);
+}
+
 bool ABattery::IsEmpty() const
 {
 	if (CurrentEnergy <= KINDA_SMALL_NUMBER)

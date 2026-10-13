@@ -15,13 +15,19 @@ public:
 	UPowerComponent();
 	virtual void BeginPlay() override;
 	
-	bool AddBattery(ABattery* Battery);
-	bool RemoveBattery(ABattery* Battery);
+	// Добавляет указанную батарею в выбранный слот.
+	bool AddBattery(ABattery* Battery, int32 SlotIndex);
 	
+	// Удаляет батарею из указанного слота и возвращает указатель на неё.
+	ABattery* RemoveBattery(int32 SlotIndex);
+	
+	// Регистрирует потребителя энергии в компоненте питания.
+	// Потребитель сортируется по приоритету.	
 	bool RegisterConsumer(UActorComponent* Consumer);
-	bool UnRegisterConsumer(UActorComponent* Consumer);
 	
-	void NotifyPowerChanged();
+	// Отменяет регистрацию потребителя энергии.
+	// Удаляет указанный компонент из списка потребителей и пересчитывает нагрузку.
+	bool UnRegisterConsumer(UActorComponent* Consumer);
 	
 protected:
 	UPROPERTY()
