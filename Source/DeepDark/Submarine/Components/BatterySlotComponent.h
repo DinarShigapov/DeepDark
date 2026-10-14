@@ -6,6 +6,7 @@
 #include "BatterySlotComponent.generated.h"
 
 class UPowerComponent;
+class AMainCharacter;
 
 UCLASS()
 class DEEPDARK_API UBatterySlotComponent : public UBoxComponent, public IInteractable
@@ -17,6 +18,7 @@ public:
 	
 	UBatterySlotComponent();
 	
+	UPROPERTY()
 	TObjectPtr<UPowerComponent> PowerComponent = nullptr;
 	
 	virtual void Interact(AActor* Interactor) override;

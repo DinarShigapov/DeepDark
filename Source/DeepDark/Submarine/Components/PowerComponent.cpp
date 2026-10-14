@@ -119,6 +119,22 @@ bool UPowerComponent::UnRegisterConsumer(UActorComponent* Consumer)
 	return true;
 }
 
+bool UPowerComponent::HasBatteryAt(int32 SlotIndex) const
+{
+	if (SlotIndex < 0 || SlotIndex > SlotCount - 1)
+	{
+		return false;
+	}
+	
+	if (!BatterySlots.IsValidIndex(SlotIndex))
+	{
+		return false;
+	}
+
+	ABattery* Battery = BatterySlots[SlotIndex];
+	return Battery != nullptr;
+}
+
 void UPowerComponent::RecalculateLoad()
 {
 	CurrentLoad = 0.f;

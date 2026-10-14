@@ -39,6 +39,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> InteractAction;
 	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<AActor> Slot = nullptr;
+	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void Move(const struct FInputActionValue& Value);

@@ -29,6 +29,7 @@ public:
 	// Удаляет указанный компонент из списка потребителей и пересчитывает нагрузку.
 	bool UnRegisterConsumer(UActorComponent* Consumer);
 	
+	bool HasBatteryAt(int32 SlotIndex) const;
 protected:
 	UPROPERTY()
 	TArray<TObjectPtr<ABattery>> BatterySlots;
