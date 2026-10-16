@@ -9,6 +9,7 @@ class UCameraComponent;
 class UInteractionComponent;
 class UInputMappingContext;
 class UInputAction;
+class AItemBase;
 
 UCLASS()
 class DEEPDARK_API AMainCharacter : public ACharacter
@@ -40,7 +41,7 @@ protected:
 	TObjectPtr<UInputAction> InteractAction;
 	
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<AActor> Slot = nullptr;
+	TObjectPtr<AItemBase> HeldItem = nullptr;
 	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 

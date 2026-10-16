@@ -1,12 +1,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DeepDark/Interaction/PickupItem.h"
+#include "ItemBase.h"
 #include "Battery.generated.h"
 
 
 UCLASS()
-class DEEPDARK_API ABattery : public APickupItem
+class DEEPDARK_API ABattery : public AItemBase
 {
 	GENERATED_BODY()
 

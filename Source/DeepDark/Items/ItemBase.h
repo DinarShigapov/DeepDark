@@ -1,21 +1,29 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Interactable.h"
 #include "DeepDark/MainCharacter.h"
+#include "DeepDark/Interaction/Interactable.h"
 #include "GameFramework/Actor.h"
-#include "PickupItem.generated.h"
+#include "ItemBase.generated.h"
 
 class UStaticMeshComponent;
 class AMainComponent;
 
+UENUM()
+enum class EItemLocation : uint8
+{
+	InWorld,
+	Held,
+	Installed
+};
+
 UCLASS()
-class DEEPDARK_API APickupItem : public AActor, public IInteractable
+class DEEPDARK_API AItemBase : public AActor, public IInteractable
 {
 	GENERATED_BODY()
 
 public:	
-	APickupItem();
+	AItemBase();
 
 	virtual void Interact(AActor* Interactor) override;
 	
@@ -23,11 +31,10 @@ public:
 	TObjectPtr<UStaticMeshComponent> Mesh = nullptr;
 
 protected:
-	void SetHeldMode(bool bHeld);
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	EItemLocation ItemLocation = EItemLocation::InWorld;
+	
 private:
 	ECollisionEnabled::Type SavedCollisionEnabled = ECollisionEnabled::QueryOnly;
-	
 	bool TryPickup(AMainCharacter* Character);
-
 };
